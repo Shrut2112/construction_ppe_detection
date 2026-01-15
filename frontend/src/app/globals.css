@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --color-tech-obsidian: #050505;
+  --color-tech-lead: #1A1A1B;
+  --color-tech-steel: #2D2D2E;
+  --color-tech-neon: #00FF41;
+}
+
+body {
+  @apply bg-tech-obsidian text-slate-300 font-sans antialiased;
+  /* Subtle grid background */
+  background-image: 
+    linear-gradient(to right, rgba(0, 255, 65, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 255, 65, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.tech-card {
+  @apply bg-tech-lead border border-tech-steel rounded-none p-4 transition-all duration-300;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.tech-card:hover {
+  @apply border-tech-neon/50;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.05);
+}
