@@ -66,7 +66,7 @@ while cap.isOpened():
     frames += 1
     if not ret: break
 
-    if frames % 2 == 0:
+    if frames % 3 == 0:
         continue
 
     # YOLO Tracking

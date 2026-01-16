@@ -41,7 +41,7 @@ pipeline_instance = PPEPipeline()
 def read_root():
     return {"status": "System Operational"}
 
-@app.post("/upload")
+@app.post("/upload_video")
 async def upload_video(file: UploadFile = File(...)):
     file_location = os.path.join(UPLOAD_DIR, file.filename)
     with open(file_location, "wb") as buffer:

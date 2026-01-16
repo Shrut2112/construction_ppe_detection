@@ -1,60 +1,65 @@
-"use client"
-import { useRef, useState } from 'react';
-import { ShieldCheck, Upload, Play } from 'lucide-react';
-import { uploadVideo } from '@/lib/api';
+"use client";
+import React, { useRef, useState } from 'react';
+import { Upload, Play, AlertCircle } from 'lucide-react';
 
 export default function LiveStream() {
   const [isStreaming, setIsStreaming] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.[0]) return;
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+
     try {
-      await uploadVideo(e.target.files[0]);
-      // small delay to let backend init
-      setTimeout(() => setIsStreaming(true), 1000);
+      const res = await fetch('http://localhost:8000/upload_video', {
+        method: 'POST',
+        body: formData,
+      });
+      if (res.ok) {
+        setIsStreaming(true);
+      }
     } catch (err) {
-      console.error(err);
-      alert("Upload failed");
-    } finally {
-      setUploading(false);
+      console.error("Upload failed", err);
     }
   };
 
   return (
-    <div className="relative rounded-xl overflow-hidden border-2 border-industrial-700 bg-black group h-full">
-      <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-industrial-900/80 px-3 py-1.5 rounded-full border border-industrial-success/50">
-        <div className={`w-2 h-2 rounded-full ${isStreaming ? 'bg-industrial-success animate-pulse' : 'bg-gray-500'}`} />
-        <span className="text-xs font-mono text-industrial-success uppercase tracking-widest">
-          {isStreaming ? "Live Feed" : "Offline"}
-        </span>
-      </div>
-
-      <div className="absolute top-4 right-4 z-10 flex gap-2">
-        <label className="cursor-pointer bg-industrial-800 hover:bg-industrial-700 text-white px-3 py-1.5 rounded-md text-xs flex items-center gap-2 transition-colors border border-industrial-600">
-          <Upload size={14} />
-          {uploading ? "Uploading..." : "Upload Video"}
-          <input type="file" className="hidden" accept="video/*" onChange={handleFileUpload} disabled={uploading} />
-        </label>
-      </div>
-
+    <div className="relative w-full h-full bg-black flex flex-col items-center justify-center text-slate-500">
       {isStreaming ? (
         <img
           src="http://localhost:8000/video_feed"
-          alt="Live Stream"
+          alt="Live Feed"
           className="w-full h-full object-contain"
         />
       ) : (
-        <div className="flex flex-col items-center justify-center w-full aspect-video text-industrial-400">
-          <Play size={48} className="mb-2 opacity-50" />
-          <p className="text-sm">Upload a video to start processing</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="p-4 border border-dashed border-slate-700 rounded-lg flex flex-col items-center gap-2 hover:border-tech-neon/50 transition-colors cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}>
+            <Upload size={32} className="text-slate-400" />
+            <span className="text-xs uppercase tracking-widest font-bold">Upload Source Feed</span>
+          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="video/*"
+            onChange={handleUpload}
+          />
         </div>
       )}
 
-      {/* Visual Overlay Grid */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20 pointer-events-none" />
+      {/* Overlay Status */}
+      <div className="absolute top-4 right-4 flex gap-2">
+        {isStreaming && (
+          <span className="flex items-center gap-1 bg-red-600/20 border border-red-500 text-red-500 px-2 py-1 text-[9px] font-black uppercase tracking-widest animate-pulse">
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500 mr-1" />
+            LIVE_REQ
+          </span>
+        )}
+      </div>
     </div>
   );
 }
