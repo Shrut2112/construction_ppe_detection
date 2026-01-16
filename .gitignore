@@ -23,3 +23,5 @@ venv/
 *.pt
 *.onnx
 uploaded_videos/
+storage/
+videos/

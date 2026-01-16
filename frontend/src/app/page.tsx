@@ -5,6 +5,7 @@ import {
   AlertCircle, Footprints, Shirt, Camera, Maximize2,
   Database
 } from 'lucide-react';
+import Link from 'next/link';
 import LiveStream from '@/components/video/LiveStream';
 import { fetchStats, fetchViolations, Stats, Violation } from '@/lib/api';
 
@@ -37,53 +38,60 @@ export default function TechDashboard() {
   return (
     <main className="min-h-screen p-6 max-w-[1600px] mx-auto space-y-6 font-mono bg-tech-obsidian text-slate-300">
 
-{/* Precision Header */}
-<header className="flex justify-between items-center border-b border-tech-steel pb-8">
-  <div className="flex items-center gap-6">
-    <div className="p-3 border border-tech-neon bg-tech-neon/10">
-      <ShieldCheck
-        className="text-tech-neon shadow-[0_0_14px_#00FF41]"
-        size={36}
-      />
-    </div>
+      {/* Precision Header */}
+      <header className="flex justify-between items-center border-b border-tech-steel pb-8">
+        <div className="flex items-center gap-8">
+          <div className="p-4 border border-tech-neon bg-tech-neon/10">
+            <ShieldCheck
+              className="text-tech-neon shadow-[0_0_14px_#00FF41]"
+              size={48}
+            />
+          </div>
 
-    <div>
-      <h1 className="text-3xl font-black tracking-tight text-white leading-none">
-        SAFEGUARD <span className="text-tech-neon">AI</span>
-      </h1>
-      <p className="text-xs text-tech-neon/70 tracking-[0.25em] mt-1">
-        LAB_SURVEILLANCE_v4.2
-      </p>
-    </div>
-  </div>
+          <div>
+            <h1 className="text-5xl font-black tracking-tight text-white leading-none">
+              SAFEGUARD <span className="text-tech-neon">AI</span>
+            </h1>
+            <p className="text-sm text-tech-neon/70 tracking-[0.25em] mt-1 font-bold">
+              LAB_SURVEILLANCE_v4.2
+            </p>
+          </div>
+        </div>
 
-  <div className="flex gap-10 items-center text-sm">
-    <div className="flex items-center gap-3 text-tech-neon font-bold">
-      <Database size={16} /> SYSTEM_ONLINE
-    </div>
+        <div className="flex gap-12 items-center text-base">
+          <div className="flex items-center gap-3 text-tech-neon font-bold text-lg">
+            <Database size={20} /> SYSTEM_ONLINE
+          </div>
 
-    <div className="h-10 w-[1px] bg-tech-steel" />
+          <div className="h-12 w-[1px] bg-tech-steel" />
 
-    <div className="text-right">
-      <span className="block text-slate-500 uppercase text-xs">
-        Backend Link
-      </span>
-      <span className="text-white font-bold tracking-tight uppercase">
-        CONNECTED
-      </span>
-    </div>
-  </div>
-</header>
+          <div className="text-right">
+            <span className="block text-slate-500 uppercase text-xs font-bold">
+              Backend Link
+            </span>
+            <span className="text-white font-bold tracking-tight uppercase text-lg">
+              CONNECTED
+            </span>
+          </div>
 
-{/* KPI Grid */}
-<div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6 mt-8">
-  <TechStat icon={<Users size={22} />} label="Total_Workers" value={stats?.total_workers || 0} color="text-white" />
-  <TechStat icon={<HardHat size={22} />} label="Helmet_Count" value={stats?.helmet_count || 0} color="text-tech-neon" progress={100} />
-  <TechStat icon={<Eye size={22} />} label="Mask_Count" value={stats?.mask_count || 0} color="text-tech-warning" progress={80} />
-  <TechStat icon={<Shirt size={22} />} label="Vest_Count" value={stats?.vest_count || 0} color="text-tech-neon" progress={75} />
-  <TechStat icon={<AlertCircle size={22} />} label="Violations_Today" value={stats?.violations_today || 0} color="text-tech-alert" isAlert />
-  <TechStat icon={<Activity size={22} />} label="System_Status" value="ACTIVE" color="text-tech-neon" progress={100} />
-</div>
+          <div className="h-12 w-[1px] bg-tech-steel" />
+
+          <Link href="/webcam" className="flex items-center gap-2 px-6 py-3 bg-tech-neon/10 border border-tech-neon text-tech-neon hover:bg-tech-neon hover:text-black transition-all font-bold tracking-widest text-sm uppercase group">
+            <Camera size={20} className="group-hover:scale-110 transition-transform" />
+            Switch_to_Webcam
+          </Link>
+        </div>
+      </header>
+
+      {/* KPI Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-8 mt-10">
+        <TechStat icon={<Users size={32} />} label="Total_Workers" value={stats?.total_workers || 0} color="text-white" />
+        <TechStat icon={<HardHat size={32} />} label="Helmet_Count" value={stats?.helmet_count || 0} color="text-tech-neon" progress={100} />
+        <TechStat icon={<Eye size={32} />} label="Mask_Count" value={stats?.mask_count || 0} color="text-tech-warning" progress={80} />
+        <TechStat icon={<Shirt size={32} />} label="Vest_Count" value={stats?.vest_count || 0} color="text-tech-neon" progress={75} />
+        <TechStat icon={<AlertCircle size={32} />} label="Violations_Today" value={stats?.violations_today || 0} color="text-tech-alert" isAlert />
+        <TechStat icon={<Activity size={32} />} label="System_Status" value="ACTIVE" color="text-tech-neon" progress={100} />
+      </div>
 
       {/* Main Content Area - Split into Vertical Decks */}
       <div className="flex flex-col gap-8">
@@ -247,14 +255,15 @@ export default function TechDashboard() {
 
 // Sub-components
 function TechStat({ icon, label, value, color, isAlert, progress = 0 }: any) {
+  // Increase icon size via prop (passed below) but also adjust layout here
   return (
-    <div className={`bg-tech-lead border p-4 transition-all duration-300 ${isAlert ? 'border-tech-alert/30 bg-tech-alert/5' : 'border-tech-steel hover:border-tech-neon/50'}`}>
-      <div className="flex justify-between items-start mb-2">
-        <span className="text-slate-500 text-[9px] uppercase font-bold tracking-tighter">{label}</span>
-        <span className={`${color} opacity-80`}>{icon}</span>
+    <div className={`bg-tech-lead border p-6 transition-all duration-300 ${isAlert ? 'border-tech-alert/30 bg-tech-alert/5' : 'border-tech-steel hover:border-tech-neon/50'}`}>
+      <div className="flex justify-between items-start mb-4">
+        <span className="text-slate-500 text-xl uppercase font-extrabold tracking-tighter">{label}</span>
+        <span className={`${color} opacity-80 scale-125 origin-top-right`}>{icon}</span>
       </div>
-      <div className={`text-2xl font-black ${color} tracking-tighter truncate`}>{value}</div>
-      <div className="w-full h-1 bg-tech-steel/50 mt-3 relative overflow-hidden">
+      <div className={`text-5xl font-black ${color} tracking-tighter truncate`}>{value}</div>
+      <div className="w-full h-1.5 bg-tech-steel/50 mt-4 relative overflow-hidden">
         <div
           className={`h-full absolute left-0 top-0 transition-all duration-1000 ${isAlert ? 'bg-tech-alert' : 'bg-tech-neon shadow-[0_0_8px_#00FF41]'}`}
           style={{ width: `${progress}%` }}

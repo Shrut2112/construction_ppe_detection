@@ -66,7 +66,11 @@ class PPEPipeline:
             self.cap.release()
         self.cap = cv.VideoCapture(video_path)
         
-        # Reset Session State
+        self.reset_session()
+        print(f"[INFO] Video source set to: {video_path}")
+
+    def reset_session(self):
+        """Resets the pipeline state for a new session."""
         self.identity_manager = {} 
         self.global_manager = {}
         self.frames_count = 0
@@ -78,7 +82,6 @@ class PPEPipeline:
             "mask_count": 0,
             "violations_today": 0 
         }
-        print(f"[INFO] Video source set to: {video_path}")
 
     def get_stats(self):
         return self.current_stats

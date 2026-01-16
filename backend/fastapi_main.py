@@ -4,6 +4,7 @@ from fastapi.responses import StreamingResponse
 import shutil
 import os
 import cv2 as cv
+import numpy as np
 from pathlib import Path
 from typing import List
 
@@ -51,6 +52,44 @@ async def upload_video(file: UploadFile = File(...)):
     pipeline_instance.set_source(file_location)
     
     return {"filename": file.filename, "status": "Uploaded and Pipeline Initialized"}
+
+@app.websocket("/ws_stream")
+async def websocket_endpoint(websocket: WebSocket):
+    print("[DEBUG] WebSocket Connection Request Received")
+    try:
+        await websocket.accept()
+        print("[DEBUG] WebSocket Accepted")
+        
+        pipeline_instance.reset_session()
+        print("[INFO] WebSocket Connected: Webcam Mode")
+        
+        while True:
+            data = await websocket.receive_bytes()
+            # print(f"[DEBUG] Received frame data: {len(data)} bytes") # Commented out to reduce noise
+            
+            nparr = np.frombuffer(data, np.uint8)
+            frame = cv.imdecode(nparr, cv.IMREAD_COLOR)
+
+            if frame is None:
+                print("[WARN] Received empty/invalid frame")
+                continue
+
+            # Process frame
+            processed_frame = pipeline_instance._process_frame(frame)
+
+            # Encode and send back
+            _, buffer = cv.imencode('.jpg', processed_frame)
+            await websocket.send_bytes(buffer.tobytes())
+            
+    except Exception as e:
+        print(f"[ERROR] WebSocket Error: {e}")
+        import traceback
+        traceback.print_exc()
+        try:
+            await websocket.close()
+        except:
+            pass
+
 
 @app.get("/video_feed")
 def video_feed():
